@@ -1,0 +1,5 @@
+_build
+.elixir_ls
+.elixir-tools
+deps
+.DS_Store
