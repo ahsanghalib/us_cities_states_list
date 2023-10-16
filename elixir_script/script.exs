@@ -1,5 +1,7 @@
 #!/usr/bin/env elixir
 
+Mix.install([:poison])
+
 defmodule Benchmark do
   def measure(function) do
     time =
@@ -49,6 +51,12 @@ defmodule Solution do
 
     IO.inspect(length(cities))
     IO.inspect(length(states))
+
+    states_file = fn d -> File.write!("states.json", d) end
+    cities_file = fn d -> File.write!("cities.json", d) end
+
+    states |> Poison.encode!() |> states_file.()
+    cities |> Poison.encode!() |> cities_file.()
   end
 end
 
