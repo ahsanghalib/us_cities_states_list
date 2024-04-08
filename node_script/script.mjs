@@ -25,14 +25,22 @@ perf.observe({ entryTypes: ["measure"], buffered: true });
 
     const clean = async (msg) => {
       if (msg === "close") {
-        const cities = data.sort().map((d) => {
-          const row = d.split(",");
-          return {
-            city: row[0],
-            state_short: row[1],
-            state_full: row[2],
-          };
-        });
+        const cities = data
+          .map((d) => {
+            const row = d.split(",");
+            return {
+              city: row[0],
+              state_short: row[1],
+              state_full: row[2],
+            };
+          })
+          .reduce((acc, cur) => {
+            if (!acc.some((d) => d.city.includes(cur.city))) {
+              return [...acc, cur];
+            }
+            return acc;
+          }, [])
+          .sort((a, b) => a.city.localeCompare(b.city));
 
         const states = data
           .reduce((acc, cur) => {
@@ -42,14 +50,14 @@ perf.observe({ entryTypes: ["measure"], buffered: true });
             }
             return [...acc];
           }, [])
-          .sort()
           .map((d) => {
             const row = d.split(",");
             return {
               state_short: row[0],
               state_full: row[1],
             };
-          });
+          })
+          .sort((a, b) => a.state_short.localeCompare(b.state_short));
 
         Promise.all([
           await writeFile("cities.json", JSON.stringify(cities)),
